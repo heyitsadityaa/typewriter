@@ -14,6 +14,7 @@ export const posts = pgTable("post", {
 export const categories = pgTable("categories", {
     id: serial("id").primaryKey(),
     title: varchar("title", { length: 50 }).notNull(),
+    description: text("description").notNull(),
     slug: varchar("slug", { length: 50 }).notNull().unique(),
 })
 
