@@ -1,21 +1,15 @@
-import { TRPCError } from '@trpc/server';
 import { baseProcedure, createTRPCRouter } from '../init';
+
 import { z } from 'zod';
-import { categories } from '@/db/schema';
 import { eq } from 'drizzle-orm';
+
+import { TRPCError } from '@trpc/server';
+import { categories } from '@/db/schema';
 
 export const CategoryRouter = createTRPCRouter({
     getall: baseProcedure.query(async ({ ctx }) => {
         try {
-            const result = await ctx.db.query.categories.findMany();
-
-            if (!result || result.length === 0) {
-                throw new TRPCError({
-                    code: 'NOT_FOUND',
-                    message: 'No categories found',
-                });
-            }
-
+            const result = await ctx.db.select().from(categories)
             return result;
         } catch (error) {
             throw new TRPCError({

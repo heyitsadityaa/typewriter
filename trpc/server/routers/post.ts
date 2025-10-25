@@ -1,21 +1,15 @@
 import { baseProcedure, createTRPCRouter } from '../init';
+
 import { z } from 'zod';
-import { TRPCError } from '@trpc/server';
-import { categories, posts } from "@/db/schema"
 import { eq } from 'drizzle-orm';
+
+import { TRPCError } from '@trpc/server';
+import { posts } from "@/db/schema"
 
 export const postRouter = createTRPCRouter({
     getall: baseProcedure.query(async ({ ctx }) => {
         try {
-            const allPosts = await ctx.db.query.posts.findMany()
-
-            if (!allPosts || allPosts.length === 0) {
-                throw new TRPCError({
-                    code: 'NOT_FOUND',
-                    message: 'No posts found',
-                });
-            }
-
+            const allPosts = await ctx.db.select().from(posts);
             return allPosts;
         } catch (error) {
             throw new TRPCError({
@@ -78,7 +72,6 @@ export const postRouter = createTRPCRouter({
                     cause: error as Error,
                 });
             }
-
         }),
 
     updatePostById: baseProcedure
@@ -130,9 +123,22 @@ export const postRouter = createTRPCRouter({
         .input(z.object({ id: z.int() }))
         .mutation(async ({ ctx, input }) => {
             try {
+                const existing = await ctx.db.query.posts.findFirst({
+                    where: eq(posts.id, input.id)
+                })
+
+                if (!existing) {
+                    throw new TRPCError({
+                        code: 'NOT_FOUND',
+                        message: 'No post found to delete.'
+                    })
+                }
+
                 const result = await ctx.db
                     .delete(posts)
-                    .where(eq(posts.id, input.id))
+                    .where(eq(posts.id, input.id)).returning()
+                return result[0]
+
             } catch (error) {
                 throw new TRPCError({
                     code: 'INTERNAL_SERVER_ERROR',
