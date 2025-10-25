@@ -52,13 +52,11 @@ export const CategoryRouter = createTRPCRouter({
         )
         .mutation(async ({ ctx, input }) => {
             try {
-                const result = await ctx.db.insert(categories).values({
-                    title: input.title,
-                    slug: input.slug,
-                    description: input.description
-                }).returning();
-
-                return result;
+                const [category] = await ctx.db
+                    .insert(categories)
+                    .values(input)
+                    .returning();
+                return category;
             } catch (error) {
                 throw new TRPCError({
                     code: 'INTERNAL_SERVER_ERROR',
@@ -81,25 +79,30 @@ export const CategoryRouter = createTRPCRouter({
             try {
                 const existing = await ctx.db.query.categories.findFirst({
                     where: eq(categories.id, input.id)
-                })
+                });
 
                 if (!existing) {
                     throw new TRPCError({
                         code: 'NOT_FOUND',
                         message: 'No category found to update.'
-                    })
+                    });
                 }
 
-                const result = await ctx.db.update(categories).set({
-                    ...(input.title && { title: input.title }),
-                    ...(input.description && { description: input.description }),
-                    ...(input.slug && { slug: input.slug })
-                })
+                const [updatedCategory] = await ctx.db
+                    .update(categories)
+                    .set({
+                        ...(input.title !== undefined && { title: input.title }),
+                        ...(input.slug !== undefined && { slug: input.slug }),
+                        ...(input.description !== undefined && { description: input.description })
+                    })
+                    .where(eq(categories.id, input.id))
+                    .returning();
 
+                return updatedCategory;
             } catch (error) {
                 throw new TRPCError({
                     code: 'INTERNAL_SERVER_ERROR',
-                    message: 'Failed to update post',
+                    message: 'Failed to update category',
                     cause: error as Error,
                 });
             }
@@ -117,18 +120,22 @@ export const CategoryRouter = createTRPCRouter({
                     throw new TRPCError({
                         code: 'NOT_FOUND',
                         message: 'No category found to delete.'
-                    })
+                    });
                 }
 
-                const result = await ctx.db.delete(categories).where(eq(categories.id, input.id))
+                const [deletedCategory] = await ctx.db
+                    .delete(categories)
+                    .where(eq(categories.id, input.id))
+                    .returning();
 
-                return result;
+                return deletedCategory;
             } catch (error) {
                 throw new TRPCError({
                     code: 'INTERNAL_SERVER_ERROR',
-                    message: 'Failed to delete post',
+                    message: 'Failed to delete category',
                     cause: error as Error,
                 });
             }
         }),
+
 })

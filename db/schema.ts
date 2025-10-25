@@ -4,7 +4,6 @@ export const posts = pgTable("post", {
     id: serial("id").primaryKey(),
     title: varchar("title").notNull(),
     content: text("content").notNull(),
-    slug: varchar("slug", { length: 50 }).notNull().unique(),
     author: varchar("author", { length: 100 }).default("Anonymous"),
     published: boolean("published").default(false),
     createdAt: timestamp("created_at").defaultNow(),
