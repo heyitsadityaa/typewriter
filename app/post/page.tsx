@@ -7,7 +7,6 @@ import { ErrorBoundary } from 'react-error-boundary'
 
 const AllPosts = () => {
     const queryClient = getQueryClient()
-    // Fire-and-forget multiple prefetches
     void Promise.all([
         queryClient.prefetchQuery(trpc.post.getall.queryOptions()),
         queryClient.prefetchQuery(trpc.category.getall.queryOptions()),

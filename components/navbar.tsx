@@ -28,7 +28,7 @@ const Navbar = () => {
                             Home
                         </Link>
                         <Link
-                            href="/blog"
+                            href="/post"
                             className="font-mono text-sm font-medium transition-all duration-300 ease-out hover:text-accent-foreground"
                         >
                             Blog
@@ -40,10 +40,10 @@ const Navbar = () => {
                             Categories
                         </Link>
                         <Link
-                            href="/about"
+                            href="https://aditya-portfolio-five-psi.vercel.app"
                             className="font-mono text-sm font-medium transition-all duration-300 ease-out hover:text-accent-foreground"
                         >
-                            About
+                            About Me
                         </Link>
                     </div>
 
