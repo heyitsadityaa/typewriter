@@ -61,13 +61,13 @@ export function PostCard({ post, categoryName, size = "medium" }: PostCardProps)
             )} */}
             <div className="absolute top-4 right-4 z-10 flex items-center gap-2">
                 <Link href={`/post/${post.id}/update`} aria-label="Edit post">
-                    <button
+                    <Button
                         type="button"
-                        className="inline-flex h-8 w-8 items-center justify-center rounded bg-muted px-2 py-1 text-sm transition-all duration-200 ease-out hover:bg-accent hover:text-accent-foreground"
+                        className="inline-flex h-8 w-8 items-center justify-center rounded bg-muted px-2 py-1 text-sm transition-all text-accent-foreground duration-200 ease-out hover:bg-accent hover:text-accent-foreground"
                         title="Edit"
                     >
                         <Pencil />
-                    </button>
+                    </Button>
                 </Link>
 
                 <Button

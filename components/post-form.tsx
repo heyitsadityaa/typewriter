@@ -45,25 +45,19 @@ const PostForm: React.FC<PostFormProps> = ({ mode, postId }) => {
 
     const createPost = mode === 'create' ? useMutation(trpc.post.createPost.mutationOptions({
         onError: () => {
-            toast("Failed to create post.", {
-                closeButton: true,
-                description: "An error occurred while creating the post."
-            })
+            console.log("An error occurred while creating the post.");
         },
         onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: trpc.post.getPostById.queryKey({ id: postId }) })
+            console.log("Created post successfully.");
         },
     })) : null;
 
     const updatePost = mode === 'update' ? useMutation(trpc.post.updatePostById.mutationOptions({
         onError: () => {
-            toast("Failed to updating post.", {
-                closeButton: true,
-                description: "An error occurred while updating the post."
-            })
+            console.log("An error occurred while updating the post.");
         },
         onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: trpc.post.getPostById.queryKey({ id: postId }) })
+            console.log("Updated post successfully.");
         },
     })) : null;
 
@@ -101,7 +95,7 @@ const PostForm: React.FC<PostFormProps> = ({ mode, postId }) => {
                             content: value.content,
                             author: value.author,
                             published: value.published = true,
-                            categoryIds: value.categories = [1],
+                            categoryIds: value.categories = [5],
                         });
                         toast.success("Post created successfully!", { id: toastId, closeButton: true });
                         router.push("/post");
@@ -126,7 +120,7 @@ const PostForm: React.FC<PostFormProps> = ({ mode, postId }) => {
                             content: value.content,
                             author: value.author,
                             published: value.published = true,
-                            categoryIds: value.categories = [1],
+                            categoryIds: value.categories = [5],
                         });
                         toast.success("Post updated successfully!", { closeButton: true });
                         router.push("/post")

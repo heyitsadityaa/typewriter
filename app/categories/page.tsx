@@ -18,7 +18,6 @@ const Categories = () => {
                     <CategoriesContent />
                 </Suspense>
             </ErrorBoundary>
-
         </HydrationBoundary>
     );
 }
