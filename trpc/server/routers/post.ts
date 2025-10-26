@@ -5,7 +5,6 @@ import { eq } from 'drizzle-orm';
 
 import { TRPCError } from '@trpc/server';
 import { postCategories, posts } from "@/db/schema"
-import { db } from '@/db/drizzle';
 
 export const postRouter = createTRPCRouter({
     getall: baseProcedure.query(async ({ ctx }) => {
@@ -89,7 +88,6 @@ export const postRouter = createTRPCRouter({
                 id: z.int(),
                 title: z.string().optional(),
                 content: z.string().optional(),
-                slug: z.string().min(2),
                 published: z.boolean().optional(),
                 author: z.string().optional().default("Anonymous"),
                 categoryIds: z.array(z.number())

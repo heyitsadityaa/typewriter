@@ -8,6 +8,8 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { LayoutWrapper } from "@/components/layout-wrapper";
 import { SpinnerCustom } from "@/components/ui/spinner";
+import { toast } from "sonner";
+import { Pencil, Trash } from "lucide-react";
 
 const EachPostContent = ({ id }: { id: number }) => {
     const trpc = useTRPC();
@@ -27,7 +29,45 @@ const EachPostContent = ({ id }: { id: number }) => {
                     <div className="inline-block rounded bg-muted px-2 py-1 font-mono text-xs font-bold uppercase transition-all duration-300 ease-out hover:bg-accent hover:text-accent-foreground">
                         {/* {post.category} */}
                     </div>
-                    <h1 className="font-mono text-4xl font-bold tracking-tighter">{post.title}</h1>
+                    <div className="flex items-center justify-between">
+
+                        <h1 className="font-mono text-4xl font-bold tracking-tighter">{post.title}</h1>
+
+                        <div className="inline-flex items-center justify-center gap-2">
+                            <Link href={`/post/${post.id}/update`} aria-label="Edit post">
+                                <button
+                                    type="button"
+                                    className="inline-flex h-8 w-8 items-center justify-center rounded bg-muted px-2 py-1 text-sm transition-all duration-200 ease-out hover:bg-accent hover:text-accent-foreground"
+                                    title="Edit"
+                                >
+                                    <Pencil />
+                                </button>
+                            </Link>
+
+                            <Button
+                                type="button"
+                                aria-label="Delete post"
+                                title="Delete"
+                                onClick={() => {
+                                    if (confirm("Delete this post? This action cannot be undone.")) {
+                                        // TODO: implement deletion logic
+                                        try {
+
+                                            toast.success("Post deleted");
+                                            // refresh or update state as needed
+                                            if (typeof window !== "undefined") window.location.reload();
+                                        } catch (err) {
+                                            toast.error("Failed to delete post");
+                                            console.error(err);
+                                        }
+                                    }
+                                }}
+                                className="inline-flex h-8 w-8 items-center justify-center rounded bg-muted/80 px-2 py-1 text-sm text-destructive transition-all duration-200 ease-out hover:bg-destructive/10"
+                            >
+                                <Trash className="text-red-500" />
+                            </Button>
+                        </div>
+                    </div>
                     <div className="flex flex-wrap items-center gap-4 font-mono text-sm text-muted-foreground">
                         <span>{post.author}</span>
                         <span>•</span>

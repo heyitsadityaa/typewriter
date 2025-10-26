@@ -34,7 +34,7 @@ const Navbar = () => {
                             Blog
                         </Link>
                         <Link
-                            href="/categories/manage"
+                            href="/categories"
                             className="font-mono text-sm font-medium transition-all duration-300 ease-out hover:text-accent-foreground"
                         >
                             Categories
