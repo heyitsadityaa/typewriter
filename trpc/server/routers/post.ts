@@ -95,46 +95,36 @@ export const postRouter = createTRPCRouter({
         )
         .mutation(async ({ ctx, input }) => {
             try {
-                const result = await ctx.db.transaction(async (tx) => {
-
-                    const [updatedPost] = await tx
-                        .update(posts)
-                        .set({
-                            title: input.title,
-                            content: input.content,
-                            published: input.published,
-                            author: input.author,
-                            updatedAt: new Date(),
-                        })
-                        .where(eq(posts.id, input.id))
-                        .returning();
-
-                    if (!updatedPost) {
-                        throw new TRPCError({
-                            code: "NOT_FOUND",
-                            message: "Post not found",
-                        });
-                    }
 
 
-                    if (input.categoryIds && input.categoryIds.length > 0) {
+                const [updatedPost] = await ctx.db
+                    .update(posts)
+                    .set({
+                        title: input.title,
+                        content: input.content,
+                        published: input.published,
+                        author: input.author,
+                    })
+                    .where(eq(posts.id, input.id))
+                    .returning();
 
-                        await tx
-                            .delete(postCategories)
-                            .where(eq(postCategories.postId, input.id));
+                if (input.categoryIds && input.categoryIds.length > 0) {
 
-                        await tx.insert(postCategories).values(
-                            input.categoryIds.map((categoryId) => ({
-                                postId: input.id,
-                                categoryId,
-                            }))
-                        );
-                    }
+                    await ctx.db
+                        .delete(postCategories)
+                        .where(eq(postCategories.postId, input.id));
 
-                    return updatedPost;
-                });
+                    await ctx.db.insert(postCategories).values(
+                        input.categoryIds.map((categoryId) => ({
+                            postId: input.id,
+                            categoryId,
+                        }))
+                    );
+                }
 
-                return result;
+                return updatedPost;
+
+
             } catch (error) {
                 throw new TRPCError({
                     code: "INTERNAL_SERVER_ERROR",

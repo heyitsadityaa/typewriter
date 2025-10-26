@@ -1,7 +1,7 @@
 "use client";
 
 import { useTRPC } from "@/trpc/client";
-import { useSuspenseQuery } from "@tanstack/react-query";
+import { useMutation, useQueryClient, useSuspenseQuery } from "@tanstack/react-query";
 import React from "react";
 import { useQuery } from "@tanstack/react-query";
 import Link from "next/link";
@@ -10,9 +10,24 @@ import { LayoutWrapper } from "@/components/layout-wrapper";
 import { SpinnerCustom } from "@/components/ui/spinner";
 import { toast } from "sonner";
 import { Pencil, Trash } from "lucide-react";
+import { useRouter } from "next/navigation";
 
 const EachPostContent = ({ id }: { id: number }) => {
     const trpc = useTRPC();
+    const queryClient = useQueryClient()
+    const router = useRouter();
+
+    const deletePost = useMutation(trpc.post.deletePostById.mutationOptions({
+        onError: () => {
+            toast("Failed to delete post.", {
+                closeButton: true,
+                description: "An error occurred while deleting the post."
+            })
+        },
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: trpc.post.getPostById.queryKey({ id: post.id }) })
+        }
+    }))
     const postQuery = useSuspenseQuery(trpc.post.getPostById.queryOptions({ id }));
 
     if (postQuery.isLoading) return <div><SpinnerCustom /></div>;
@@ -48,14 +63,13 @@ const EachPostContent = ({ id }: { id: number }) => {
                                 type="button"
                                 aria-label="Delete post"
                                 title="Delete"
-                                onClick={() => {
+                                onClick={async () => {
                                     if (confirm("Delete this post? This action cannot be undone.")) {
-                                        // TODO: implement deletion logic
                                         try {
-
+                                            await deletePost.mutateAsync({ id: post.id });
                                             toast.success("Post deleted");
-                                            // refresh or update state as needed
-                                            if (typeof window !== "undefined") window.location.reload();
+
+                                            router.push("/post")
                                         } catch (err) {
                                             toast.error("Failed to delete post");
                                             console.error(err);

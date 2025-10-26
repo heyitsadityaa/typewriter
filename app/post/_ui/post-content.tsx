@@ -4,7 +4,8 @@ import { LayoutWrapper } from '@/components/layout-wrapper';
 import { PostCard } from '@/components/post-card';
 import { SpinnerCustom } from '@/components/ui/spinner';
 import { useTRPC } from '@/trpc/client';
-import { useSuspenseQuery } from '@tanstack/react-query';
+import { useMutation, useQueryClient, useSuspenseQuery } from '@tanstack/react-query';
+import { toast } from 'sonner';
 
 const AllPostsContents = () => {
     const trpc = useTRPC();

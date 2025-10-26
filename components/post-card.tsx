@@ -4,6 +4,9 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Pencil, Trash } from 'lucide-react';
 import { toast } from "sonner";
+import { useTRPC } from "@/trpc/client";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { Spinner } from "./ui/spinner";
 
 interface PostCardProps {
     post: {
@@ -21,6 +24,20 @@ interface PostCardProps {
 }
 
 export function PostCard({ post, categoryName, size = "medium" }: PostCardProps) {
+    const trpc = useTRPC();
+    const queryClient = useQueryClient()
+    const deletePost = useMutation(trpc.post.deletePostById.mutationOptions({
+        onError: () => {
+            toast("Failed to delete post.", {
+                closeButton: true,
+                description: "An error occurred while deleting the post."
+            })
+        },
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: trpc.post.getall.queryKey() })
+        }
+    }))
+
     const sizeClasses = {
         small: "col-span-1",
         medium: "col-span-1 md:col-span-2",
@@ -43,7 +60,7 @@ export function PostCard({ post, categoryName, size = "medium" }: PostCardProps)
                 </div>
             )} */}
             <div className="absolute top-4 right-4 z-10 flex items-center gap-2">
-                <Link href={`/post/${post.id}/edit`} aria-label="Edit post">
+                <Link href={`/post/${post.id}/update`} aria-label="Edit post">
                     <button
                         type="button"
                         className="inline-flex h-8 w-8 items-center justify-center rounded bg-muted px-2 py-1 text-sm transition-all duration-200 ease-out hover:bg-accent hover:text-accent-foreground"
@@ -57,14 +74,17 @@ export function PostCard({ post, categoryName, size = "medium" }: PostCardProps)
                     type="button"
                     aria-label="Delete post"
                     title="Delete"
-                    onClick={() => {
+                    onClick={async () => {
+                        let toastId: string | number | undefined;
                         if (confirm("Delete this post? This action cannot be undone.")) {
-                            // TODO: implement deletion logic
                             try {
-
-                                toast.success("Post deleted");
-                                // refresh or update state as needed
-                                if (typeof window !== "undefined") window.location.reload();
+                                toastId = toast(
+                                    <span className="flex items-center gap-2">
+                                        <Spinner /> Deleting post...
+                                    </span>
+                                );
+                                await deletePost.mutateAsync({ id: post.id });
+                                toast.success("Post deleted", { id: toastId });
                             } catch (err) {
                                 toast.error("Failed to delete post");
                                 console.error(err);
@@ -90,7 +110,7 @@ export function PostCard({ post, categoryName, size = "medium" }: PostCardProps)
                     </div>
                     <Link href={`/post/${post.id}`}>
                         <h2
-                            className={`font-mono font-bold transition-all duration-300 ease-out group-hover:text-accent ${size === "large" ? "text-3xl" : size === "medium" ? "text-2xl" : "text-xl"}`}
+                            className={`font-mono font-bold transition-all duration-300 ease-out group-hover:text-accent-foreground ${size === "large" ? "text-3xl" : size === "medium" ? "text-2xl" : "text-xl"}`}
                         >
                             {post.title}
                         </h2>

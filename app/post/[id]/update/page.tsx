@@ -3,19 +3,19 @@ import { getQueryClient, trpc } from "@/trpc/server";
 import { dehydrate, HydrationBoundary, QueryClient } from "@tanstack/react-query";
 import { Suspense } from "react";
 import { ErrorBoundary } from 'react-error-boundary'
-import CategoriesContent from "./_ui/categories-content";
+import UpdateContent from "./_ui/page";
 
-const Categories = () => {
-    const queryClient = getQueryClient()
-    void Promise.all([
-        queryClient.prefetchQuery(trpc.category.getall.queryOptions()),
-        // queryClient.prefetchQuery(trpc.category.createCategory.queryOptions()),
-    ]);
+const Update = async () => {
+    const queryClient = getQueryClient();
+    // void queryClient.prefetchQuery([
+    //     // trpc.post.getPostById.queryOptions({ id: postId })
+    // ]
+    // );
     return (
         <HydrationBoundary state={dehydrate(queryClient)}>
             <ErrorBoundary fallback={"Error"}>
                 <Suspense fallback={<SpinnerCustom />}>
-                    <CategoriesContent />
+                    <UpdateContent />
                 </Suspense>
             </ErrorBoundary>
 
@@ -23,4 +23,4 @@ const Categories = () => {
     );
 }
 
-export default Categories
+export default Update

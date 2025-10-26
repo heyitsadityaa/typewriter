@@ -36,8 +36,8 @@ interface PostFormProps {
 
 const PostForm: React.FC<PostFormProps> = ({ mode, postId }) => {
     const trpc = useTRPC();
-    const router = useRouter()
     const queryClient = useQueryClient()
+    const router = useRouter()
     // Fetch post data if in update mode
     const postQuery = mode === "update" && postId !== undefined
         ? useSuspenseQuery(trpc.post.getPostById.queryOptions({ id: postId }))
@@ -66,18 +66,6 @@ const PostForm: React.FC<PostFormProps> = ({ mode, postId }) => {
             queryClient.invalidateQueries({ queryKey: trpc.post.getPostById.queryKey({ id: postId }) })
         },
     })) : null;
-
-    const deletePost = useMutation(trpc.post.deletePostById.mutationOptions({
-        onError: () => {
-            toast("Failed to delete post.", {
-                closeButton: true,
-                description: "An error occurred while deleting the post."
-            })
-        },
-        onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: trpc.post.getPostById.queryKey({ id: postId }) })
-        },
-    }))
 
     const defaultValues: PostValues = mode === "update" && postQuery?.data
         ? {
@@ -124,15 +112,29 @@ const PostForm: React.FC<PostFormProps> = ({ mode, postId }) => {
 
                 }
             } else if (mode === 'update' && postId && updatePost) {
-                await updatePost.mutateAsync({
-                    id: postId,
-                    title: value.title,
-                    content: value.content,
-                    author: value.author,
-                    published: value.published,
-                    categoryIds: value.categories,
-                });
-                toast("Post updated successfully!", { closeButton: true });
+                if (updatePost) {
+                    try {
+                        toastId = toast(
+                            <span className="flex items-center gap-2">
+                                <Spinner />
+                                Updating post...
+                            </span>
+                        );
+                        await updatePost.mutateAsync({
+                            id: postId,
+                            title: value.title,
+                            content: value.content,
+                            author: value.author,
+                            published: value.published = true,
+                            categoryIds: value.categories = [1],
+                        });
+                        toast.success("Post updated successfully!", { closeButton: true });
+                        router.push("/post")
+                    } catch (error) {
+                        toast.error("Failed to update post.", { id: toastId, closeButton: true });
+                        console.log(error);
+                    }
+                }
             }
         }
     })
