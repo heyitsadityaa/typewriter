@@ -20,6 +20,7 @@ import Link from 'next/link'
 import { toast } from 'sonner'
 import { redirect, useRouter } from 'next/navigation'
 import { Spinner } from './ui/spinner'
+import { Checkbox } from './ui/checkbox'
 
 interface PostValues {
     title: string
@@ -39,9 +40,13 @@ const PostForm: React.FC<PostFormProps> = ({ mode, postId }) => {
     const queryClient = useQueryClient()
     const router = useRouter()
     // Fetch post data if in update mode
-    const postQuery = mode === "update" && postId !== undefined
-        ? useSuspenseQuery(trpc.post.getPostById.queryOptions({ id: postId }))
-        : null;
+    const postQuery = mode === "update" && postId !== undefined ? useSuspenseQuery(trpc.post.getPostById.queryOptions({ id: postId })) : null;
+
+    const categoriesQuery = useSuspenseQuery(trpc.category.getall.queryOptions());
+
+    const categories = categoriesQuery?.data ?? [];
+
+    const eachPostCategory = mode === "update" && postId !== undefined ? useSuspenseQuery(trpc.postCategories.eachPostCategory.queryOptions({ id: postId })) : null;
 
     const createPost = mode === 'create' ? useMutation(trpc.post.createPost.mutationOptions({
         onError: () => {
@@ -61,12 +66,17 @@ const PostForm: React.FC<PostFormProps> = ({ mode, postId }) => {
         },
     })) : null;
 
+    const categoryIds =
+        mode === "update" && eachPostCategory?.data
+            ? eachPostCategory.data.map((cat) => cat.categoryId)
+            : [];
+
     const defaultValues: PostValues = mode === "update" && postQuery?.data
         ? {
             title: postQuery.data.title ?? "",
             content: postQuery.data.content ?? "",
             author: postQuery.data.author ?? "",
-            categories: [],
+            categories: categoryIds,
             published: !!postQuery.data.published,
         }
         : {
@@ -93,9 +103,9 @@ const PostForm: React.FC<PostFormProps> = ({ mode, postId }) => {
                         await createPost.mutateAsync({
                             title: value.title,
                             content: value.content,
-                            author: value.author,
+                            author: value.author?.trim() ? value.author : "Anonymous",
                             published: value.published = true,
-                            categoryIds: value.categories = [5],
+                            categoryIds: value.categories,
                         });
                         toast.success("Post created successfully!", { id: toastId, closeButton: true });
                         router.push("/post");
@@ -120,7 +130,7 @@ const PostForm: React.FC<PostFormProps> = ({ mode, postId }) => {
                             content: value.content,
                             author: value.author,
                             published: value.published = true,
-                            categoryIds: value.categories = [5],
+                            categoryIds: value.categories,
                         });
                         toast.success("Post updated successfully!", { closeButton: true });
                         router.push("/post")
@@ -159,6 +169,31 @@ const PostForm: React.FC<PostFormProps> = ({ mode, postId }) => {
                             {field.state.meta.errors.length > 0 && (
                                 <em className='text-red-500'>{field.state.meta.errors.join(", ")}</em>
                             )}
+                        </div>
+                    )}
+                </form.Field>
+
+                <form.Field name="categories">
+                    {(field) => (
+                        <div>
+                            <Label>Categories</Label>
+                            <div className="flex flex-wrap gap-2 mt-2">
+                                {categories.map(category => (
+                                    <label key={category.id} className="flex items-center gap-1">
+                                        <Checkbox
+                                            onChange={e => {
+                                                const target = e.target as HTMLInputElement;
+                                                if (target.checked) {
+                                                    field.handleChange([...field.state.value, category.id]);
+                                                } else {
+                                                    field.handleChange(field.state.value.filter(id => id !== category.id));
+                                                }
+                                            }}
+                                        />
+                                        {category.title}
+                                    </label>
+                                ))}
+                            </div>
                         </div>
                     )}
                 </form.Field>

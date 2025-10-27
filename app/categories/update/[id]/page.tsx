@@ -8,20 +8,20 @@ import React, { Suspense } from 'react'
 import { ErrorBoundary } from 'react-error-boundary'
 import UpdateContent from '../_ui/page'
 
-const UpdateCategory = ({ params }: { params: { id: number } }) => {
+const UpdateCategory = () => {
     const queryClient = getQueryClient();
-    void queryClient.prefetchQuery(
-        trpc.category.getCategoryById.queryOptions({ id: Number(params.id) })
-    );
+    // await queryClient.prefetchQuery(
+    //     trpc.category.getCategoryById.queryOptions({ id: categoryId })
+    // );
     return (
         <HydrationBoundary state={dehydrate(queryClient)}>
             <ErrorBoundary fallback={"Error"}>
                 <Suspense fallback={<SpinnerCustom />}>
-                    <UpdateContent id={Number(params.id)} />
+                    <UpdateContent />
                 </Suspense>
             </ErrorBoundary>
         </HydrationBoundary>
-    )
-}
+    );
+};
 
-export default UpdateCategory
+export default UpdateCategory;

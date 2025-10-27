@@ -2,7 +2,7 @@ import z from "zod";
 import { baseProcedure, createTRPCRouter } from "../init";
 import { TRPCError } from "@trpc/server";
 import { eq } from "drizzle-orm";
-import { postCategories, posts } from '@/db/schema'
+import { categories, postCategories, posts } from '@/db/schema'
 
 export const PostCategoryRouter = createTRPCRouter({
     filterByCategory: baseProcedure.input(z.object({ id: z.int() })).query(async ({ ctx, input }) => {
@@ -18,12 +18,7 @@ export const PostCategoryRouter = createTRPCRouter({
                 .innerJoin(posts, eq(postCategories.postId, posts.id))
                 .where(eq(postCategories.categoryId, input.id));
 
-            if (!result.length) {
-                throw new TRPCError({
-                    code: 'NOT_FOUND',
-                    message: 'No post found for this category.',
-                })
-            }
+            if (!result.length) return ["No Data"]
 
             return result;
 
@@ -31,6 +26,30 @@ export const PostCategoryRouter = createTRPCRouter({
             throw new TRPCError({
                 code: 'INTERNAL_SERVER_ERROR',
                 message: 'Failed to filter by category',
+                cause: error as Error,
+            });
+        }
+    }),
+
+    eachPostCategory: baseProcedure.input(z.object({ id: z.int() })).query(async ({ ctx, input }) => {
+        try {
+            const result = await ctx.db
+                .select({
+                    postId: posts.id,
+                    categoryId: categories.id,
+                    categoryTitle: categories.title,
+                })
+                .from(postCategories)
+                .innerJoin(posts, eq(postCategories.postId, posts.id))
+                .innerJoin(categories, eq(postCategories.categoryId, categories.id))
+                .where(eq(posts.id, input.id));
+
+            return result;
+
+        } catch (error) {
+            throw new TRPCError({
+                code: 'INTERNAL_SERVER_ERROR',
+                message: 'Failed to find post category',
                 cause: error as Error,
             });
         }

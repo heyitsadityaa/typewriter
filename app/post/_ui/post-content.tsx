@@ -1,19 +1,38 @@
 "use client"
 
+import { CategorySidebar } from '@/components/category-sidebar';
 import { LayoutWrapper } from '@/components/layout-wrapper';
 import { PostCard } from '@/components/post-card';
 import { SpinnerCustom } from '@/components/ui/spinner';
 import { useTRPC } from '@/trpc/client';
 import { useMutation, useQueryClient, useSuspenseQuery } from '@tanstack/react-query';
+import { useState } from 'react';
 import { toast } from 'sonner';
 
 const AllPostsContents = () => {
     const trpc = useTRPC();
-    const postsQuery = useSuspenseQuery(trpc.post.getall.queryOptions());
+
+    const [activeCategory, setActiveCategory] = useState<number | undefined>()
+
+    const postsQuery =
+        activeCategory !== undefined
+            ? useSuspenseQuery(trpc.postCategories.filterByCategory.queryOptions({ id: activeCategory }))
+            : useSuspenseQuery(trpc.post.getall.queryOptions());
+
+    // Normalize posts to a common shape
+    const posts = (postsQuery.data ?? []).map((post: any) => ({
+        id: post.id ?? post.postId,
+        title: post.title,
+        content: post.content,
+        author: post.author ?? "Anonymous",
+        published: post.published ?? true,
+        createdAt: post.createdAt,
+        updatedAt: post.updatedAt ?? null,
+    }));
+
     const categoriesQuery = useSuspenseQuery(trpc.category.getall.queryOptions());
 
-    const posts = postsQuery.data ?? [];
-    const categories = categoriesQuery.data ?? [];
+    const categories = categoriesQuery.data ?? "";
     const isLoading = postsQuery.isLoading || categoriesQuery.isLoading;
     const error = postsQuery.error ?? categoriesQuery.error;
 
@@ -38,11 +57,11 @@ const AllPostsContents = () => {
                 <div className="mt-12 grid gap-8 lg:grid-cols-4">
                     {/* Sidebar */}
                     <div className="lg:col-span-1 animate-slide-down">
-                        {/* <SidebarFilter
-              categories={categories}
-              activeCategory={activeCategory}
-              onCategoryChange={setActiveCategory}
-            /> */}
+                        <CategorySidebar
+                            categories={categories}
+                            activeCategory={activeCategory}
+                            onCategoryChange={(categoryId) => setActiveCategory(categoryId === null ? undefined : Number(categoryId))}
+                        />
                     </div>
 
                     {/* Posts Grid */}

@@ -5,17 +5,17 @@ import { ErrorBoundary } from "react-error-boundary";
 import { Suspense } from "react";
 import { SpinnerCustom } from "@/components/ui/spinner";
 
-const EachPost = async ({ params }: { params: { id: number } }) => {
+const EachPost = () => {
   const queryClient = getQueryClient();
-  void queryClient.prefetchQuery(
-    trpc.post.getPostById.queryOptions({ id: Number(params.id) })
-  );
+  // void queryClient.prefetchQuery(
+  //   trpc.post.getPostById.queryOptions({ id: Number(params.id) })
+  // );
 
   return (
     <HydrationBoundary state={dehydrate(queryClient)}>
       <ErrorBoundary fallback={"Error"}>
         <Suspense fallback={<SpinnerCustom />}>
-          <EachPostContent id={Number(params.id)} />
+          <EachPostContent />
         </Suspense>
       </ErrorBoundary>
     </HydrationBoundary>

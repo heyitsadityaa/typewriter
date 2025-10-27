@@ -123,7 +123,6 @@ export function PostCard({ post, categoryName, size = "medium" }: PostCardProps)
                     <span>{post.author}</span>
                     <span>•</span>
                     <span>{new Date(post.createdAt).toLocaleDateString()}</span>
-                    <span>•</span>
                 </div>
                 <Link href={`/post/${post.id}`}>
                     <Button

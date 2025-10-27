@@ -7,15 +7,21 @@ import { useQuery } from "@tanstack/react-query";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { LayoutWrapper } from "@/components/layout-wrapper";
-import { SpinnerCustom } from "@/components/ui/spinner";
+import { Spinner, SpinnerCustom } from "@/components/ui/spinner";
 import { toast } from "sonner";
 import { Pencil, Trash } from "lucide-react";
-import { useRouter } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 
-const EachPostContent = ({ id }: { id: number }) => {
+const EachPostContent = () => {
+    const params = useParams();
+    const id = Number(params.id);
+
     const trpc = useTRPC();
     const queryClient = useQueryClient()
     const router = useRouter();
+
+    const postQuery = useSuspenseQuery(trpc.post.getPostById.queryOptions({ id }));
+    const post = postQuery.data;
 
     const deletePost = useMutation(trpc.post.deletePostById.mutationOptions({
         onError: () => {
@@ -28,21 +34,27 @@ const EachPostContent = ({ id }: { id: number }) => {
             queryClient.invalidateQueries({ queryKey: trpc.post.getPostById.queryKey({ id: post.id }) })
         }
     }))
-    const postQuery = useSuspenseQuery(trpc.post.getPostById.queryOptions({ id }));
+
+    const categoryQuery = useSuspenseQuery(trpc.postCategories.eachPostCategory.queryOptions({ id: post.id }));
+    const categories = categoryQuery?.data ?? "";
 
     if (postQuery.isLoading) return <div><SpinnerCustom /></div>;
     if (postQuery.error) return <div>Error loading post</div>;
     if (!postQuery.data) return <div>Post not found</div>;
 
-    const post = postQuery.data;
+
 
     return (
         <LayoutWrapper>
             <article className="mx-auto max-w-3xl px-4 py-12 sm:px-6 lg:px-8 animate-fade-in">
                 {/* Header */}
                 <header className="space-y-4 border-b border-border pb-8 animate-slide-down">
-                    <div className="inline-block rounded bg-muted px-2 py-1 font-mono text-xs font-bold uppercase transition-all duration-300 ease-out hover:bg-accent hover:text-accent-foreground">
-                        {/* {post.category} */}
+                    <div>
+                        {categories.map((category) => (
+                            <div key={category.categoryId} className="inline-block rounded bg-muted px-2 py-1 font-mono text-xs font-bold uppercase transition-all duration-300 ease-out hover:bg-accent hover:text-accent-foreground mx-2">
+                                {category.categoryTitle}
+                            </div>
+                        ))}
                     </div>
                     <div className="flex items-center justify-between">
 
@@ -64,10 +76,16 @@ const EachPostContent = ({ id }: { id: number }) => {
                                 aria-label="Delete post"
                                 title="Delete"
                                 onClick={async () => {
+                                    let toastId: string | number | undefined;
                                     if (confirm("Delete this post? This action cannot be undone.")) {
                                         try {
+                                            toastId = toast(
+                                                <span className="flex items-center gap-2">
+                                                    <Spinner /> Deleting post...
+                                                </span>
+                                            );
                                             await deletePost.mutateAsync({ id: post.id });
-                                            toast.success("Post deleted");
+                                            toast.success("Post deleted", { id: toastId });
 
                                             router.push("/post")
                                         } catch (err) {

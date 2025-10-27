@@ -37,6 +37,15 @@ export default function HomeContent() {
                                 Read Blog
                             </Button>
                         </Link>
+                        <Link href="/categories">
+                            <Button
+                                size="lg"
+                                variant="secondary"
+                                className="font-mono transition-all duration-300 ease-out hover:shadow-lg hover:-translate-y-1"
+                            >
+                                Manage Categories
+                            </Button>
+                        </Link>
                         <Link href="/create">
                             <Button
                                 size="lg"
