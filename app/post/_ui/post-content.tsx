@@ -3,7 +3,7 @@
 import { CategorySidebar } from '@/components/category-sidebar';
 import { LayoutWrapper } from '@/components/layout-wrapper';
 import { PostCard } from '@/components/post-card';
-import { SpinnerCustom } from '@/components/ui/spinner';
+import { Spinner, SpinnerCustom } from '@/components/ui/spinner';
 import { useTRPC } from '@/trpc/client';
 import { useMutation, useQueryClient, useSuspenseQuery } from '@tanstack/react-query';
 import { useState } from 'react';
@@ -20,15 +20,23 @@ const AllPostsContents = () => {
             : useSuspenseQuery(trpc.post.getall.queryOptions());
 
     // Normalize posts to a common shape
-    const posts = (postsQuery.data ?? []).map((post: any) => ({
-        id: post.id ?? post.postId,
-        title: post.title,
-        content: post.content,
-        author: post.author ?? "Anonymous",
-        published: post.published ?? true,
-        createdAt: post.createdAt,
-        updatedAt: post.updatedAt ?? null,
-    }));
+    const posts = (postsQuery.data ?? [])
+        .map((post: any) => {
+            const id = post.id ?? post.postId;
+            if (!id) return null; // skip malformed items
+            return {
+                id,
+                title: post.title,
+                content: post.content,
+                author: post.author ?? "Anonymous",
+                published: post.published ?? true,
+                createdAt: post.createdAt,
+                updatedAt: post.updatedAt ?? null,
+                // try to capture a category id if returned by the API
+                categoryId: post.categoryId ?? post.category_id ?? undefined,
+            };
+        })
+        .filter(Boolean) as Array<any>;
 
     const categoriesQuery = useSuspenseQuery(trpc.category.getall.queryOptions());
 
@@ -38,7 +46,7 @@ const AllPostsContents = () => {
 
     if (isLoading) return <SpinnerCustom />;
     if (error) return <div>Error loading posts</div>;
-    if (posts.length === 0) return "No data";
+    // if (posts.length === 0) return "No data";
     // if (categories.length === 0) return "No category";
 
     const getCardSize = (index: number, isFeatured: boolean): "small" | "medium" | "large" => {
@@ -68,18 +76,7 @@ const AllPostsContents = () => {
                     <div className="lg:col-span-3">
                         {isLoading ? (
                             <div className="grid gap-6 grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
-                                {[1, 2, 3, 4, 5, 6].map((i) => (
-                                    <div
-                                        key={i}
-                                        className="rounded-lg border border-border bg-card p-6 animate-pulse-soft min-h-[300px]"
-                                        style={{ animationDelay: `${i * 0.1}s` }}
-                                    >
-                                        <div className="h-6 w-24 rounded bg-muted mb-3"></div>
-                                        <div className="h-8 w-3/4 rounded bg-muted mb-3"></div>
-                                        <div className="h-4 w-full rounded bg-muted mb-2"></div>
-                                        <div className="h-4 w-5/6 rounded bg-muted"></div>
-                                    </div>
-                                ))}
+                                <Spinner />
                             </div>
                         ) : posts.length > 0 ? (
                             <div className="grid gap-6 grid-cols-1 md:grid-cols-2 lg:grid-cols-3 auto-rows-max">

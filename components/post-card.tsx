@@ -26,6 +26,16 @@ interface PostCardProps {
 export function PostCard({ post, categoryName, size = "medium" }: PostCardProps) {
     const trpc = useTRPC();
     const queryClient = useQueryClient()
+
+    const renderContent = () => {
+        if (!post.content) return null;
+        const words = post.content.split(/\s+/).filter(Boolean);
+
+        const limit = size === "large" ? 100 : size === "medium" ? 50 : 10;
+        const excerpt = words.slice(0, limit).join(" ");
+        return words.length > limit ? `${excerpt}...` : excerpt;
+    }
+
     const deletePost = useMutation(trpc.post.deletePostById.mutationOptions({
         onError: () => {
             toast("Failed to delete post.", {
@@ -116,6 +126,7 @@ export function PostCard({ post, categoryName, size = "medium" }: PostCardProps)
                         </h2>
                     </Link>
                 </div>
+                <div className="text-accent">{renderContent()}</div>
             </div>
 
             <div className="flex flex-wrap items-center justify-between gap-4 pt-4 border-t border-border">
