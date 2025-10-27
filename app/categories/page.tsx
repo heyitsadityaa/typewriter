@@ -1,3 +1,5 @@
+export const dynamic = "force-dynamic";
+
 import { SpinnerCustom } from "@/components/ui/spinner";
 import { getQueryClient, trpc } from "@/trpc/server";
 import { dehydrate, HydrationBoundary, QueryClient } from "@tanstack/react-query";

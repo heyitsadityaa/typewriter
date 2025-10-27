@@ -1,6 +1,8 @@
+export const dynamic = "force-dynamic";
+
 import { SpinnerCustom } from "@/components/ui/spinner";
 import { getQueryClient, trpc } from "@/trpc/server";
-import { dehydrate, HydrationBoundary, QueryClient } from "@tanstack/react-query";
+import { dehydrate, HydrationBoundary } from "@tanstack/react-query";
 import { Suspense } from "react";
 import AllPostsContents from "./_ui/post-content";
 import { ErrorBoundary } from 'react-error-boundary'

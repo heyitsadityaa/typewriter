@@ -1,9 +1,12 @@
-import { getQueryClient, trpc } from "@/trpc/server";
+export const dynamic = "force-dynamic";
+
+import { getQueryClient } from "@/trpc/server";
 import { dehydrate, HydrationBoundary } from "@tanstack/react-query";
 import EachPostContent from "../_ui/each-post-content";
 import { ErrorBoundary } from "react-error-boundary";
 import { Suspense } from "react";
 import { SpinnerCustom } from "@/components/ui/spinner";
+import { Metadata } from "next";
 
 const EachPost = () => {
   const queryClient = getQueryClient();

@@ -35,7 +35,9 @@ const CategoriesContent = () => {
                 description: "An error occurred while deleting the category."
             })
         },
-        onSuccess: () => { queryClient.invalidateQueries({ queryKey: trpc.category.getall.queryKey() }) }
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: trpc.category.getall.queryKey() })
+        }
     }))
 
     return (

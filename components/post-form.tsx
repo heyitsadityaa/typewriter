@@ -5,20 +5,12 @@ import { useForm } from '@tanstack/react-form'
 import { Label } from '@/components/ui/label'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
-import {
-    DropdownMenu,
-    DropdownMenuContent,
-    DropdownMenuItem,
-    DropdownMenuLabel,
-    DropdownMenuSeparator,
-    DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
 import { Button } from '@/components/ui/button'
 import { useTRPC } from '@/trpc/client'
 import { useMutation, useQueryClient, useSuspenseQuery } from '@tanstack/react-query'
 import Link from 'next/link'
 import { toast } from 'sonner'
-import { redirect, useRouter } from 'next/navigation'
+import { useRouter } from 'next/navigation'
 import { Spinner } from './ui/spinner'
 import { Checkbox } from './ui/checkbox'
 
@@ -37,7 +29,6 @@ interface PostFormProps {
 
 const PostForm: React.FC<PostFormProps> = ({ mode, postId }) => {
     const trpc = useTRPC();
-    const queryClient = useQueryClient()
     const router = useRouter()
     // Fetch post data if in update mode
     const postQuery = mode === "update" && postId !== undefined ? useSuspenseQuery(trpc.post.getPostById.queryOptions({ id: postId })) : null;
@@ -90,6 +81,7 @@ const PostForm: React.FC<PostFormProps> = ({ mode, postId }) => {
     const form = useForm({
         defaultValues,
         onSubmit: async ({ value }) => {
+            console.log("onSubmit values:", value);
             let toastId: string | number | undefined;
             if (mode === 'create') {
                 if (createPost) {
@@ -180,13 +172,16 @@ const PostForm: React.FC<PostFormProps> = ({ mode, postId }) => {
                             <div className="flex flex-wrap gap-2 mt-2">
                                 {categories.map(category => (
                                     <label key={category.id} className="flex items-center gap-1">
-                                        <Checkbox
+                                        <input
+                                            type='checkbox'
+                                            name="categories"
+                                            checked={Array.isArray(field.state.value) && field.state.value.includes(category.id)}
                                             onChange={e => {
                                                 const target = e.target as HTMLInputElement;
                                                 if (target.checked) {
-                                                    field.handleChange([...field.state.value, category.id]);
+                                                    field.handleChange([...(field.state.value || []), category.id]);
                                                 } else {
-                                                    field.handleChange(field.state.value.filter(id => id !== category.id));
+                                                    field.handleChange((field.state.value || []).filter((id: number) => id !== category.id));
                                                 }
                                             }}
                                         />

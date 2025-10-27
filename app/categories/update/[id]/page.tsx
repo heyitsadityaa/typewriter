@@ -1,6 +1,5 @@
+export const dynamic = "force-dynamic";
 
-import CategoryForm from '@/components/category-form'
-import { LayoutWrapper } from '@/components/layout-wrapper'
 import { SpinnerCustom } from '@/components/ui/spinner'
 import { getQueryClient, trpc } from '@/trpc/server'
 import { dehydrate, HydrationBoundary } from '@tanstack/react-query'

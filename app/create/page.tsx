@@ -1,3 +1,5 @@
+export const dynamic = "force-dynamic";
+
 import { getQueryClient, trpc } from '@/trpc/server';
 import React, { Suspense } from 'react'
 import CreatePostPageContent from './_ui/create-post-page-content';
