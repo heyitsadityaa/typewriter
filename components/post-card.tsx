@@ -12,26 +12,22 @@ interface PostCardProps {
     post: {
         id: number
         title: string
-        // slug: string
         content: string
-        // category: string
         author: string
         createdAt: Date
         published: boolean
     }
     categoryName?: string
-    size?: "small" | "medium" | "large"
 }
 
-export function PostCard({ post, categoryName, size = "medium" }: PostCardProps) {
+export function PostCard({ post, categoryName }: PostCardProps) {
     const trpc = useTRPC();
     const queryClient = useQueryClient()
 
     const renderContent = () => {
         if (!post.content) return null;
         const words = post.content.split(/\s+/).filter(Boolean);
-
-        const limit = size === "large" ? 100 : size === "medium" ? 50 : 10;
+        const limit = 30;
         const excerpt = words.slice(0, limit).join(" ");
         return words.length > limit ? `${excerpt}...` : excerpt;
     }
@@ -48,27 +44,10 @@ export function PostCard({ post, categoryName, size = "medium" }: PostCardProps)
         }
     }))
 
-    const sizeClasses = {
-        small: "col-span-1",
-        medium: "col-span-1 md:col-span-2",
-        large: "col-span-1 md:col-span-2 lg:col-span-3",
-    }
-
-    const heightClasses = {
-        small: "min-h-[300px]",
-        medium: "min-h-[350px]",
-        large: "min-h-[400px]",
-    }
-
     return (
         <article
-            className={`group relative overflow-hidden rounded-lg border border-border bg-card p-6 transition-all duration-300 ease-out hover:-translate-y-1 hover:shadow-[0_0_20px_rgba(0,0,0,0.1)] dark:hover:shadow-[0_0_20px_rgba(255,255,255,0.1)] animate-fade-in ${sizeClasses[size]} ${heightClasses[size]} flex flex-col`}
+            className="group relative overflow-hidden rounded-lg border border-border bg-card p-6 transition-all duration-300 ease-out hover:-translate-y-1 hover:shadow-[0_0_20px_rgba(0,0,0,0.1)] dark:hover:shadow-[0_0_20px_rgba(255,255,255,0.1)] animate-fade-in min-h-80 flex flex-col"
         >
-            {/* {post.featured && (
-                <div className="absolute top-4 right-4 inline-block rounded bg-accent px-2 py-1 font-mono text-xs font-bold uppercase text-accent-foreground">
-                    Featured
-                </div>
-            )} */}
             <div className="absolute top-4 right-4 z-10 flex items-center gap-2">
                 <Link href={`/post/${post.id}/update`} aria-label="Edit post">
                     <Button
@@ -119,14 +98,12 @@ export function PostCard({ post, categoryName, size = "medium" }: PostCardProps)
                         )}
                     </div>
                     <Link href={`/post/${post.id}`}>
-                        <h2
-                            className={`font-mono font-bold transition-all duration-300 ease-out group-hover:text-accent-foreground ${size === "large" ? "text-3xl" : size === "medium" ? "text-2xl" : "text-xl"}`}
-                        >
+                        <h2 className="font-mono text-xl font-bold transition-all duration-300 ease-out group-hover:text-accent-foreground">
                             {post.title}
                         </h2>
                     </Link>
                 </div>
-                <div className="text-accent">{renderContent()}</div>
+                <div className="text-accent-foreground/40">{renderContent()}</div>
             </div>
 
             <div className="flex flex-wrap items-center justify-between gap-4 pt-4 border-t border-border">

@@ -5,14 +5,10 @@ import { getQueryClient } from "@/trpc/server";
 import { dehydrate, HydrationBoundary } from "@tanstack/react-query";
 import { Suspense } from "react";
 import { ErrorBoundary } from 'react-error-boundary'
-import UpdateContent from "./_ui/page";
+import UpdateContent from "./_ui/update-content";
 
 const Update = async () => {
     const queryClient = getQueryClient();
-    // void queryClient.prefetchQuery([
-    //     // trpc.post.getPostById.queryOptions({ id: postId })
-    // ]
-    // );
     return (
         <HydrationBoundary state={dehydrate(queryClient)}>
             <ErrorBoundary fallback={"Error"}>

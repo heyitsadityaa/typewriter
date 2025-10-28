@@ -34,6 +34,11 @@ export function Footer() {
                                 </a>
                             </li>
                             <li>
+                                <a href="/categories" className="hover:text-accent">
+                                    Categories
+                                </a>
+                            </li>
+                            <li>
                                 <a href="/about" className="hover:text-accent">
                                     About
                                 </a>
@@ -45,18 +50,23 @@ export function Footer() {
                         <h4 className="font-mono text-sm font-bold uppercase tracking-wider">About Me</h4>
                         <ul className="mt-4 space-y-2 font-mono text-sm">
                             <li>
-                                <a href="https://github.com/heyitsadityaa" className="hover:text-accent">
-                                    GitHub
+                                <a target="_blank" rel="noopener noreferrer" href="https://drive.google.com/file/d/1JIsYtmfDVdev6TnZ165j2XfTTZ2WT5Lw/view?usp=drive_link" className="hover:text-accent">
+                                    Resume
                                 </a>
                             </li>
                             <li>
-                                <a href="https://aditya-portfolio-five-psi.vercel.app" className="hover:text-accent">
+                                <a target="_blank" rel="noopener noreferrer" href="https://aditya-portfolio-five-psi.vercel.app" className="hover:text-accent">
                                     Portfolio
                                 </a>
                             </li>
                             <li>
-                                <a href="https://www.linkedin.com/in/aditya-prakash-06199427b" className="hover:text-accent">
+                                <a target="_blank" rel="noopener noreferrer" href="https://www.linkedin.com/in/aditya-prakash-06199427b" className="hover:text-accent">
                                     LinkedIn
+                                </a>
+                            </li>
+                            <li>
+                                <a target="_blank" rel="noopener noreferrer" href="https://github.com/heyitsadityaa" className="hover:text-accent">
+                                    GitHub
                                 </a>
                             </li>
                         </ul>
@@ -66,7 +76,7 @@ export function Footer() {
                     <div>
                         <h4 className="font-mono text-sm font-bold uppercase tracking-wider">Info</h4>
                         <p className="mt-4 font-mono text-sm text-muted-foreground">
-                            Built with Next.js, Tailwind CSS, and tw-animate-css.
+                            Built by Aditya Prakash 👷 with Next.js and trpc.
                         </p>
                     </div>
                 </div>

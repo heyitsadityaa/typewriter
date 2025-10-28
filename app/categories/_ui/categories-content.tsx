@@ -18,15 +18,6 @@ const CategoriesContent = () => {
     const categoriesQuery = useSuspenseQuery(trpc.category.getall.queryOptions());
 
     const categories = categoriesQuery.data ?? [];
-    const createCategory = useMutation(trpc.category.createCategory.mutationOptions({
-        onError: () => { },
-        onSuccess: () => { }
-    }))
-
-    const updateCategory = useMutation(trpc.category.updateCategoryById.mutationOptions({
-        onError: () => { },
-        onSuccess: () => { }
-    }))
 
     const deleteCategory = useMutation(trpc.category.deleteCategoryById.mutationOptions({
         onError: () => {

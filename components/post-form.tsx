@@ -1,18 +1,18 @@
 "use client"
 
-import React from 'react'
+import React, { useState } from 'react'
 import { useForm } from '@tanstack/react-form'
 import { Label } from '@/components/ui/label'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
 import { Button } from '@/components/ui/button'
 import { useTRPC } from '@/trpc/client'
-import { useMutation, useQueryClient, useSuspenseQuery } from '@tanstack/react-query'
+import { useMutation, useSuspenseQuery } from '@tanstack/react-query'
 import Link from 'next/link'
 import { toast } from 'sonner'
 import { useRouter } from 'next/navigation'
 import { Spinner } from './ui/spinner'
-import { Checkbox } from './ui/checkbox'
+import { useDraftStore } from '@/store'
 
 interface PostValues {
     title: string
@@ -77,6 +77,12 @@ const PostForm: React.FC<PostFormProps> = ({ mode, postId }) => {
             categories: [],
             published: false,
         };
+
+    const saveDraft = useDraftStore((s) => s.saveDraft)
+    const [showDraftNote, setShowDraftNote] = useState(false)
+
+    // key strategy: "draft:new" for new posts, "draft:<id>" for existing
+    const draftKey = mode === "create" ? "draft:new" : `draft:${postId}`
 
     const form = useForm({
         defaultValues,
@@ -239,9 +245,30 @@ const PostForm: React.FC<PostFormProps> = ({ mode, postId }) => {
                     <Button className="w-full sm:w-auto" variant="default" type="submit">
                         {mode === "create" ? "Publish" : "Update"}
                     </Button>
-                    <Button className="w-full sm:w-auto" variant="secondary" type="button">
+
+                    <Button
+                        onClick={() => {
+                            const values: PostValues = {
+                                title: form.state.values.title ?? "",
+                                content: form.state.values.content ?? "",
+                                author: form.state.values.author ?? "",
+                                categories: form.state.values.categories ?? [],
+                                published: false,
+                            };
+                            saveDraft(draftKey, values);
+                            setShowDraftNote(true);
+                            setTimeout(() => {
+                                setShowDraftNote(false);
+                                router.push("/post");
+                            }, 900);
+                        }}
+                        className="w-full sm:w-auto"
+                        variant="secondary"
+                        type="button"
+                    >
                         Save as Draft
                     </Button>
+
                     <Button className="w-full sm:w-auto" variant="secondary" type="button">
                         <Link href="/post">Cancel</Link>
                     </Button>

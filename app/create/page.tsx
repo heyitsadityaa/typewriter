@@ -1,6 +1,6 @@
 export const dynamic = "force-dynamic";
 
-import { getQueryClient, trpc } from '@/trpc/server';
+import { getQueryClient } from '@/trpc/server';
 import React, { Suspense } from 'react'
 import CreatePostPageContent from './_ui/create-post-page-content';
 import { dehydrate, HydrationBoundary } from '@tanstack/react-query';
@@ -9,10 +9,6 @@ import { SpinnerCustom } from '@/components/ui/spinner';
 
 const CreatePostPage = () => {
     const queryClient = getQueryClient()
-    // Fire-and-forget multiple prefetches
-    void Promise.all([
-        // queryClient.prefetchQuery(trpc.post.createPost.mutationOptions()),
-    ]);
     return (
         <HydrationBoundary state={dehydrate(queryClient)}>
             <ErrorBoundary fallback={"Error"}>

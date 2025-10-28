@@ -39,7 +39,7 @@ const Navbar = () => {
                         >
                             Categories
                         </Link>
-                        <Link
+                        <Link target="_blank" rel="noopener noreferrer"
                             href="https://aditya-portfolio-five-psi.vercel.app"
                             className="font-mono text-sm font-medium transition-all duration-300 ease-out hover:text-accent-foreground"
                         >
