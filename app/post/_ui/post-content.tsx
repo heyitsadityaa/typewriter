@@ -106,8 +106,8 @@ const AllPostsContents = () => {
                                 {draft && (
                                     <div className='border border-accent-foreground rounded-md px-6 py-4 mb-6 w-full'>
                                         <div className="flex items-center justify-between">
-                                            <div className="text-base font-medium">Draft: {draft.title || 'No title'}</div>
-                                            <Button onClick={handleClearDraft} variant="destructive">
+                                            <div className="text-base font-medium"><span className='text-accent-foreground/40'>Draft:</span> {draft.title || 'No title'}</div>
+                                            <Button onClick={handleClearDraft} variant="secondary">
                                                 Clear
                                             </Button>
                                         </div>
