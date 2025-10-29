@@ -31,6 +31,7 @@ const EachPostContent = () => {
         },
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: trpc.post.getPostById.queryKey({ id: post.id }) })
+            router.push("/post")
         }
     }))
 
@@ -75,22 +76,15 @@ const EachPostContent = () => {
                                 aria-label="Delete post"
                                 title="Delete"
                                 onClick={async () => {
-                                    let toastId: string | number | undefined;
                                     if (confirm("Delete this post? This action cannot be undone.")) {
-                                        try {
-                                            toastId = toast(
-                                                <span className="flex items-center gap-2">
-                                                    <Spinner /> Deleting post...
-                                                </span>
-                                            );
-                                            await deletePost.mutateAsync({ id: post.id });
-                                            toast.success("Post deleted", { id: toastId });
-
-                                            router.push("/post")
-                                        } catch (err) {
-                                            toast.error("Failed to delete post");
-                                            console.error(err);
-                                        }
+                                        toast.promise(
+                                            deletePost.mutateAsync({ id: post.id }),
+                                            {
+                                                loading: <span className="flex items-center gap-2">Deleting Post...</span>,
+                                                success: "Post deleted successfully",
+                                                error: "Failed to delete post",
+                                            }
+                                        )
                                     }
                                 }}
                                 className="inline-flex h-8 w-8 items-center justify-center rounded bg-muted/80 px-2 py-1 text-sm text-destructive transition-all duration-200 ease-out hover:bg-destructive/10"

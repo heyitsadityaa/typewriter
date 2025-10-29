@@ -1,13 +1,10 @@
 "use client"
 
-import CategoryForm from '@/components/category-form'
 import { LayoutWrapper } from '@/components/layout-wrapper'
 import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { Spinner } from '@/components/ui/spinner'
 import { useTRPC } from '@/trpc/client'
 import { useMutation, useQueryClient, useSuspenseQuery } from '@tanstack/react-query'
-import { Edit2, Pencil, PlusCircle, Trash, Trash2 } from 'lucide-react'
+import { Pencil, PlusCircle, Trash } from 'lucide-react'
 import Link from 'next/link'
 import React from 'react'
 import { toast } from 'sonner'
@@ -73,22 +70,15 @@ const CategoriesContent = () => {
                                                 aria-label="Delete category"
                                                 title="Delete"
                                                 onClick={async () => {
-                                                    let toastId: string | number | undefined;
                                                     if (confirm("Delete this category? This action cannot be undone.")) {
-                                                        try {
-                                                            toastId = toast(
-                                                                <span className="flex items-center gap-2">
-                                                                    <Spinner /> Deleting category...
-                                                                </span>
-                                                            );
-                                                            await deleteCategory.mutateAsync({ id: category.id });
-                                                            toast.success("Category deleted", { id: toastId });
-
-
-                                                        } catch (err) {
-                                                            toast.error("Failed to delete category");
-                                                            console.error(err);
-                                                        }
+                                                        toast.promise(
+                                                            deleteCategory.mutateAsync({ id: category.id }),
+                                                            {
+                                                                loading: <span className="flex items-center gap-2">Deleting category...</span>,
+                                                                success: "Category deleted successfully",
+                                                                error: "Failed to delete category",
+                                                            }
+                                                        );
                                                     }
                                                 }}
                                                 className="inline-flex h-8 w-8 items-center justify-center rounded bg-muted/80 px-2 py-1 text-sm text-destructive transition-all duration-200 ease-out hover:bg-destructive/10"

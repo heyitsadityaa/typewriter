@@ -5,7 +5,6 @@ import { useMutation, useSuspenseQuery } from '@tanstack/react-query'
 import { Label } from './ui/label'
 import { Input } from './ui/input'
 import { toast } from 'sonner'
-import { Spinner } from './ui/spinner'
 import { useRouter } from 'next/navigation'
 import { Button } from './ui/button'
 import Link from 'next/link'
@@ -36,6 +35,7 @@ const CategoryForm: React.FC<CategoryFormProps> = ({ mode, categoryId }) => {
         },
         onSuccess: () => {
             console.log("Created category successfully.");
+            router.push("/categories");
 
         },
     })) : null;
@@ -46,6 +46,7 @@ const CategoryForm: React.FC<CategoryFormProps> = ({ mode, categoryId }) => {
         },
         onSuccess: () => {
             console.log("Updated category successfully.");
+            router.push("/categories");
         },
     })) : null;
 
@@ -64,50 +65,35 @@ const CategoryForm: React.FC<CategoryFormProps> = ({ mode, categoryId }) => {
     const form = useForm({
         defaultValues,
         onSubmit: async ({ value }) => {
-            let toastId: string | number | undefined;
             if (mode === 'create') {
                 if (createCategory) {
-                    try {
-                        toastId = toast(
-                            <span className="flex items-center gap-2">
-                                <Spinner />
-                                Creating category...
-                            </span>
-                        );
-                        await createCategory.mutateAsync({
-                            title: value.title,
-                            description: value.description,
-                            slug: value.slug
-                        });
-                        toast.success("Category created successfully!", { id: toastId, closeButton: true });
-                        router.push("/categories");
-                    } catch (error) {
-                        toast.error("Failed to create Category.", { id: toastId, closeButton: true });
-                        console.log(error);
-                    }
+                    toast.promise(createCategory.mutateAsync({
+                        title: value.title,
+                        description: value.description,
+                        slug: value.slug
+                    }),
+                        {
+                            loading: <span className="flex items-center gap-2">Creating category...</span>,
+                            success: "Category created successfully",
+                            error: "Failed to create category",
+                        }
+                    )
 
                 }
             } else if (mode === 'update' && categoryId && updateCategory) {
                 if (updateCategory) {
-                    try {
-                        toastId = toast(
-                            <span className="flex items-center gap-2">
-                                <Spinner />
-                                Updating Category...
-                            </span>
-                        );
-                        await updateCategory.mutateAsync({
+                    toast.promise(
+                        updateCategory.mutateAsync({
                             id: categoryId,
                             title: value.title,
                             description: value.description,
                             slug: value.slug
-                        });
-                        toast.success("Category updated successfully!", { closeButton: true });
-                        router.push("/categories")
-                    } catch (error) {
-                        toast.error("Failed to update category.", { id: toastId, closeButton: true });
-                        console.log(error);
+                        }), {
+                        loading: <span className="flex items-center gap-2">Updating category...</span>,
+                        success: "Category updated successfully",
+                        error: "Failed to update category",
                     }
+                    )
                 }
             }
         }

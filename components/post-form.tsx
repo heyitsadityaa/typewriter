@@ -7,11 +7,10 @@ import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
 import { Button } from '@/components/ui/button'
 import { useTRPC } from '@/trpc/client'
-import { useMutation, useSuspenseQuery } from '@tanstack/react-query'
+import { useMutation, useQueryClient, useSuspenseQuery } from '@tanstack/react-query'
 import Link from 'next/link'
 import { toast } from 'sonner'
 import { useRouter } from 'next/navigation'
-import { Spinner } from './ui/spinner'
 import { useDraftStore } from '@/store'
 
 interface PostValues {
@@ -30,6 +29,7 @@ interface PostFormProps {
 const PostForm: React.FC<PostFormProps> = ({ mode, postId }) => {
     const trpc = useTRPC();
     const router = useRouter()
+    const queryClient = useQueryClient()
     // Fetch post data if in update mode
     const postQuery = mode === "update" && postId !== undefined ? useSuspenseQuery(trpc.post.getPostById.queryOptions({ id: postId })) : null;
 
@@ -45,6 +45,7 @@ const PostForm: React.FC<PostFormProps> = ({ mode, postId }) => {
         },
         onSuccess: () => {
             console.log("Created post successfully.");
+            router.push("/post")
         },
     })) : null;
 
@@ -53,6 +54,8 @@ const PostForm: React.FC<PostFormProps> = ({ mode, postId }) => {
             console.log("An error occurred while updating the post.");
         },
         onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: trpc.post.getPostById.queryKey({ id: postId }) })
+            router.push("/post")
             console.log("Updated post successfully.");
         },
     })) : null;
@@ -88,54 +91,38 @@ const PostForm: React.FC<PostFormProps> = ({ mode, postId }) => {
         defaultValues,
         onSubmit: async ({ value }) => {
             console.log("onSubmit values:", value);
-            let toastId: string | number | undefined;
             if (mode === 'create') {
                 if (createPost) {
-                    try {
-                        toastId = toast(
-                            <span className="flex items-center gap-2">
-                                <Spinner />
-                                Publishing post...
-                            </span>
-                        );
-                        await createPost.mutateAsync({
+                    toast.promise(
+                        createPost.mutateAsync({
                             title: value.title,
                             content: value.content,
                             author: value.author?.trim() ? value.author : "Anonymous",
                             published: value.published = true,
                             categoryIds: value.categories,
-                        });
-                        toast.success("Post created successfully!", { id: toastId, closeButton: true });
-                        router.push("/post");
-                    } catch (error) {
-                        toast.error("Failed to create post.", { id: toastId, closeButton: true });
-                        console.log(error);
+                        }), {
+                        loading: <span className="flex items-center gap-2">Creating post...</span>,
+                        success: "Post created successfully",
+                        error: "Failed to create post"
                     }
-
+                    )
                 }
             } else if (mode === 'update' && postId && updatePost) {
                 if (updatePost) {
-                    try {
-                        toastId = toast(
-                            <span className="flex items-center gap-2">
-                                <Spinner />
-                                Updating post...
-                            </span>
-                        );
-                        await updatePost.mutateAsync({
+                    toast.promise(
+                        updatePost.mutateAsync({
                             id: postId,
                             title: value.title,
                             content: value.content,
                             author: value.author,
                             published: value.published = true,
                             categoryIds: value.categories,
-                        });
-                        toast.success("Post updated successfully!", { closeButton: true });
-                        router.push("/post")
-                    } catch (error) {
-                        toast.error("Failed to update post.", { id: toastId, closeButton: true });
-                        console.log(error);
+                        }), {
+                        loading: <span className="flex items-center gap-2">Updating post...</span>,
+                        success: "Post updated successfully",
+                        error: "Failed to update post"
                     }
+                    )
                 }
             }
         }
