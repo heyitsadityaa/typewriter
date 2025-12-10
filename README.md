@@ -13,7 +13,7 @@ _Dark mode support throughout the application_
 
 ### Demo Video
 
-[![Demo Video](./public/screenshots/video-thumbnail.png)](./public/demo/typewriter.mp4)
+[Demo Video](https://github.com/user-attachments/assets/7d3e4268-517e-4e62-8d0d-dffcc9907b57)
 _Click to watch the full demo video_
 
 ---
