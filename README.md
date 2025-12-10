@@ -1,4 +1,4 @@
-# Typewriter - Full-Stack Blogging Platform
+# Typewriter - A minimalistic, vintage-inspired blog platform
 
 ![Typewriter Banner](./public/assets/typewriter.png)
 
@@ -22,9 +22,8 @@ _Dark mode support throughout the application_
 ## Table of Contents
 
 - [Tech Stack](#tech-stack)
-- [Features Implemented](#features-implemented)
+- [Key Features](#key-features)
 - [Project Structure](#project-structure)
-- [Setup Instructions](#setup-instructions)
 - [Database Schema](#database-schema)
 - [Architecture Decisions & Trade-offs](#architecture-decisions--trade-offs)
 - [Key Learnings & Improvements](#key-learnings--improvements)
@@ -53,109 +52,43 @@ _Dark mode support throughout the application_
 - **Tailwind CSS** - Utility-first CSS framework
 - **Radix UI** - Accessible component primitives
 - **Lucide Icons** - Icon library
-- **TipTap** - Rich text editor
 - **Sonner** - Toast notifications
 
 ---
 
-## Features Implemented
+## Key Features
 
-### Priority 1 - Core Requirements (100% Complete)
+### Content Management
 
-- [x] **Blog Post CRUD Operations**
-  - Create new posts with title, content, author, and categories
-  - Read/view individual posts
-  - Update existing posts
-  - Delete posts with confirmation
-- [x] **Category CRUD Operations**
+- **Full CRUD Operations** for blog posts and categories
+- **Draft System** with offline-first persistence using localStorage
+- **Many-to-Many Relationships** between posts and categories
+- **Category Filtering** with sidebar navigation
+- **Post Statistics** including word count and reading time estimation
 
-  - Create categories
-  - Update category details
-  - Delete categories
-  - View all categories
+### User Experience
 
-- [x] **Category-Post Relationships**
-  - Many-to-many relationship implementation
-  - Assign multiple categories to posts via checkboxes
-  - Filter posts by category
-- [x] **Blog Listing Page**
+- **Dark/Light Mode** with persistent theme preferences
+- **Fully Responsive Design** optimized for all devices
+- **Smooth Animations** and transitions throughout the application
+- **Loading & Error States** with toast notifications
+- **Mobile-Optimized Navigation** with touch-friendly interactions
 
-  - Display all published posts in a responsive grid
-  - Show post excerpts (30 words for cards)
-  - Category badges on cards
-  - Author and date information
+### Architecture
 
-- [x] **Individual Post View**
+- **End-to-End Type Safety** with tRPC and TypeScript
+- **Optimistic UI Updates** for instant user feedback
+- **Server-Side Rendering** with Next.js App Router
+- **Type-Safe Database Queries** using Drizzle ORM
+- **Form Validation** with Zod schemas and TanStack Form
 
-  - Full post content display
-  - Category information
-  - Edit and delete actions
-  - Clean, readable typography
+### Pages & Routes
 
-- [x] **Category Filtering**
-
-  - Sidebar with category list
-  - Filter posts by selected category
-  - "All Posts" option to clear filters
-
-- [x] **Responsive Navigation**
-
-  - Clean header with logo and navigation links
-  - Mobile-responsive menu
-  - Dark/Light mode toggle
-
-- [x] **Professional UI**
-  - Clean, minimalist design
-  - Consistent spacing and typography
-  - Smooth animations and transitions
-  - Card-based layout
-
-### Priority 2 - Expected Features (100% Complete)
-
-- [x] **Landing Page**
-  - Hero section with CTA
-  - Features showcase
-  - Footer with social links
-- [x] **Draft vs Published Status**
-
-  - Save posts as drafts (client-side with Zustand + localStorage)
-  - Draft badge on unpublished posts
-  - Draft banner on posts page
-  - "Continue Editing" functionality for drafts
-
-- [x] **Loading & Error States**
-
-  - Loading spinners for async operations
-  - Inline loading states for data fetching
-  - Toast notifications for success/error
-  - Error boundaries
-
-- [x] **Mobile-Responsive Design**
-
-  - Fully responsive across devices
-  - Mobile-optimized navigation
-  - Adaptive grid layouts
-  - Touch-friendly interactions
-
-- [ ] **Rich Text Editor**
-
-### Priority 3 - Nice to Have (Partial)
-
-- [x] **Dark Mode Support**
-
-  - Theme toggle in navigation
-  - Persistent theme preference
-  - Smooth theme transitions
-
-- [x] **Post Statistics**
-
-  - Word count display in cards
-  - Reading time estimation
-
-- [x] **SEO Meta Tags** - Partial (basic meta tags only)
-- [ ] **Search Functionality** - Not implemented (time constraints)
-- [ ] **Image Upload** - Not implemented (time constraints)
-- [ ] **Pagination** - Not implemented (time constraints)
+- **Landing Page** with hero section and feature showcase
+- **Posts Listing** with grid layout and category badges
+- **Individual Post View** with full content display
+- **Create/Edit Posts** with text editing
+- **Category Management** for organizing content
 
 ---
 
@@ -191,74 +124,6 @@ typewriter/
 │   └── drizzle.ts           # Database connection
 ├── store.ts                 # Zustand store (drafts)
 └── .env                     # Environment variables
-```
-
----
-
-## Setup Instructions
-
-### Prerequisites
-
-- Node.js 18+
-- npm or yarn package manager
-
-### Local Development Setup
-
-1. **Clone the repository**
-
-   ```bash
-   git clone https://github.com/heyitsadityaa/typewriter.git
-   cd typewriter
-   ```
-
-2. **Install dependencies**
-
-   ```bash
-   npm install
-   ```
-
-3. **Environment Variables**
-
-   The `.env` file is included in the repository for easy setup (public database for demonstration purposes only):
-
-   ```env
-   DATABASE_URL='postgresql://neondb_owner:npg_htDvWGB59YST@ep-proud-fog-ahkhz6sq-pooler.c-3.us-east-1.aws.neon.tech/neondb?sslmode=require&channel_binding=require'
-   ```
-
-   ⚠️ **Note**: This database is publicly accessible for assessment purposes only. In production, never commit credentials to version control.
-
-4. **Database Setup**
-
-   The database schema is already deployed on Neon. No migrations needed.
-
-   If you want to set up your own database:
-
-   ```bash
-   # Install Drizzle Kit (if not already installed)
-   npm install -D drizzle-kit
-
-   # Generate migrations
-   npx drizzle-kit generate
-
-   # Push to database
-   npx drizzle-kit push
-   ```
-
-5. **Start the development server**
-
-   ```bash
-   npm run dev
-   ```
-
-6. **Open in browser**
-
-   Navigate to [http://localhost:3000](http://localhost:3000)
-
-### Build for Production
-
-```bash
-npm run build
-npm start
 ```
 
 ---
