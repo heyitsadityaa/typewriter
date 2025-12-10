@@ -1,10 +1,22 @@
 # Typewriter - Full-Stack Blogging Platform
 
+![Typewriter Banner](./public/assets/typewriter.png)
+
 A modern, type-safe blogging platform built with Next.js 15, tRPC, Drizzle ORM, and PostgreSQL. This project demonstrates full-stack development with end-to-end type safety, efficient state management, and a clean, responsive user interface.
 
-## Live Demo
+## Project Preview
 
-[View Live Deployment](https://typewriter-red.vercel.app)
+### Screenshots
+
+![Theme](./public/assets/typewriter-theme.jpg)
+_Dark mode support throughout the application_
+
+### Demo Video
+
+[![Demo Video](./public/screenshots/video-thumbnail.png)](./public/demo/typewriter.mp4)
+_Click to watch the full demo video_
+
+---
 
 ## Table of Contents
 
@@ -14,8 +26,6 @@ A modern, type-safe blogging platform built with Next.js 15, tRPC, Drizzle ORM, 
 - [Setup Instructions](#setup-instructions)
 - [Database Schema](#database-schema)
 - [Architecture Decisions & Trade-offs](#architecture-decisions--trade-offs)
-- [Evaluation Criteria Alignment](#evaluation-criteria-alignment)
-- [Time Investment](#time-investment)
 - [Key Learnings & Improvements](#key-learnings--improvements)
 
 ---
@@ -396,73 +406,6 @@ npm start
   - Third-party library type gaps
 
 ---
-
-## Evaluation Criteria Alignment
-
-### 1. Code Organization & Architecture (20%)
-
-- ✅ Clean separation: UI components, API routers, database schema
-- ✅ Logical folder structure following Next.js App Router conventions
-- ✅ Reusable components (`post-card`, `post-form`, UI primitives)
-- ✅ Well-organized tRPC routers by domain (post, category, relationships)
-
-### 2. UI/UX - Overall Design (20%)
-
-- ✅ Clean, professional design
-- ✅ Responsive across all devices (mobile-first approach)
-- ✅ Smooth animations and transitions
-- ✅ Consistent spacing and typography (Tailwind utilities)
-- ✅ Accessible (semantic HTML, ARIA labels, keyboard navigation)
-
-### 3. TypeScript Implementation (15%)
-
-- ✅ End-to-end type safety via tRPC
-- ✅ Well-defined interfaces for all entities
-- ✅ Minimal `any` types (only where necessary)
-- ✅ Leverages tRPC's automatic type inference
-- ✅ Zod schemas for runtime validation
-
-### 4. React Best Practices (15%)
-
-- ✅ Modern React patterns (hooks, composition)
-- ✅ Efficient re-renders
-- ✅ Custom hooks for reusable logic
-- ✅ tRPC React hooks for data fetching
-- ✅ Proper key props in lists
-
-### 5. Database Design (10%)
-
-- ✅ Normalized schema (3NF)
-- ✅ Proper foreign key relationships
-- ✅ Junction table for many-to-many
-- ✅ Appropriate data types
-- ✅ Drizzle ORM for type-safe queries
-
-### 6. API Design (tRPC) (10%)
-
-- ✅ RESTful-style procedure naming
-- ✅ Input validation with Zod
-- ✅ Consistent error handling
-- ✅ Logical router organization
-- ✅ Type-safe mutations and queries
-
-### 7. State Management (5%)
-
-- ✅ Zustand for global draft state
-- ✅ React Query (via tRPC) for server state
-- ✅ localStorage persistence
-- ✅ Optimistic updates for mutations
-
-### 8. Error Handling (5%)
-
-- ✅ Zod validation on all inputs
-- ✅ User-friendly error messages (toasts)
-- ✅ Graceful degradation
-- ✅ Error boundaries (at route level)
-
----
-
-## Time Investment
 
 **Total Time**: ~14 hours to 18 hours
 
